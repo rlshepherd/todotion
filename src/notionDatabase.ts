@@ -1,13 +1,6 @@
-const { Client } = require('@notionhq/client');
+import notion from "./notionClient";
 
-require('dotenv').config();
-
-// Initializing a client
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
-interface Database {
+export interface Database {
   title: string
   id: string
 }
@@ -17,11 +10,8 @@ const databaseReducer = (acc: Database[], database: {title: {plain_text: string}
 }
 
 const getDatabaseList = () => {
-  let databasesResponse = async () => {
-      const response = await notion.databases.list(); 
-      return response; 
-  }
-  const databaseList = databasesResponse().then(
+  const databasesResponse = async () => { return await notion.databases.list(); }
+  const databaseList: Promise<Database[]> = databasesResponse().then(
       (value) =>  value['results'].reduce(databaseReducer, [])
   );
   return databaseList;
