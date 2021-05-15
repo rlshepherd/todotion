@@ -35,27 +35,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var notionDatabase_1 = __importDefault(require("./notionDatabase"));
-var app = express_1.default();
-app.get('/', function (req, res) {
-    (function () { return __awaiter(void 0, void 0, void 0, function () {
-        var databaseList;
+exports.default = void 0;
+var Client = require('@notionhq/client').Client;
+require('dotenv').config();
+// Initializing a client
+var notion = new Client({
+    auth: process.env.NOTION_TOKEN,
+});
+var databaseNameReducer = function (acc, database) {
+    return __spreadArray(__spreadArray([], acc), [{ title: database['title'][0]['plain_text'], id: database['id'] }]);
+};
+var getDatabaseList = function () {
+    var databases = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, notionDatabase_1.default()];
+                case 0: return [4 /*yield*/, notion.databases.list()];
                 case 1:
-                    databaseList = _a.sent();
-                    res.send(databaseList);
-                    return [2 /*return*/];
+                    response = _a.sent();
+                    return [2 /*return*/, response];
             }
         });
-    }); })();
-});
-app.listen(3000, function () {
-    console.log('The application is listening on port 3000!');
-});
+    }); };
+    databases().then(function (value) {
+        var databaseList = value['results'].reduce(databaseNameReducer, []);
+        return databaseList;
+    });
+};
+exports.default = getDatabaseList;

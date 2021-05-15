@@ -1,11 +1,13 @@
 import express from 'express';
-import retrieveDatabases from './notion';
+import getDatabaseList from './notionDatabase'
 
 const app = express();
 
 app.get('/', (req, res) => {
-    res.send('Well done!');
-    retrieveDatabases();
+    (async () => {
+        const databaseList = await getDatabaseList();
+        res.send(databaseList);
+      })()
 })
 
 app.listen(3000, () => {
