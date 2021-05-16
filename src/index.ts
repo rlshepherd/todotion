@@ -11,7 +11,7 @@ const app = express();
 // List all authorized databases.
 app.get('/', (req, res) => {
     (async () => {
-        const databaseList = await getDatabaseList();
+        const databaseList = await getDatabaseList().then(x => x.flat());
         res.send(databaseList);
     })();
 })
@@ -19,25 +19,25 @@ app.get('/', (req, res) => {
 // List all pages from all authorized databases. 
 app.get('/pages', (req, res) => {
     (async () => {
-        const databaseList = await getDatabaseList();
+        const databaseList = await getDatabaseList().then(x => x.flat());
         const pageList = await Promise.all(
             databaseList.flatMap(database => getPages(database))
-        );
-        res.send(pageList.flat());
+        ).then(x => x.flat());
+        res.send(pageList);
     })();
 })
 
 // List all todos
 app.get('/todos', (req, res) => {
     (async () => {
-        const databaseList = await getDatabaseList();
+        const databaseList = await getDatabaseList().then(x => x.flat());
         const pageList = await Promise.all(
-            databaseList.flat().flatMap(database => getPages(database))
-        );
+            databaseList.flatMap(database => getPages(database))
+        ).then(x => x.flat());
         const todoList = await Promise.all(
-            pageList.flat().flatMap(page => getTodoChildrenFromBlockId(page['id']))
-        );
-        res.send(todoList.flat());
+            pageList.flatMap(page => getTodoChildrenFromBlockId(page['id']))
+        ).then(x => x.flat());
+        res.send(todoList);
     })();
 })
 

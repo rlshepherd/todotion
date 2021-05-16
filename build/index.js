@@ -12,25 +12,25 @@ const app = express_1.default();
 // List all authorized databases.
 app.get('/', (req, res) => {
     (async () => {
-        const databaseList = await notionDatabase_1.default();
+        const databaseList = await notionDatabase_1.default().then(x => x.flat());
         res.send(databaseList);
     })();
 });
 // List all pages from all authorized databases. 
 app.get('/pages', (req, res) => {
     (async () => {
-        const databaseList = await notionDatabase_1.default();
-        const pageList = await Promise.all(databaseList.flatMap(database => notionPage_1.default(database)));
-        res.send(pageList.flat());
+        const databaseList = await notionDatabase_1.default().then(x => x.flat());
+        const pageList = await Promise.all(databaseList.flatMap(database => notionPage_1.default(database))).then(x => x.flat());
+        res.send(pageList);
     })();
 });
 // List all todos
 app.get('/todos', (req, res) => {
     (async () => {
-        const databaseList = await notionDatabase_1.default();
-        const pageList = await Promise.all(databaseList.flat().flatMap(database => notionPage_1.default(database)));
-        const todoList = await Promise.all(pageList.flat().flatMap(page => notionTodo_1.default(page['id'])));
-        res.send(todoList.flat());
+        const databaseList = await notionDatabase_1.default().then(x => x.flat());
+        const pageList = await Promise.all(databaseList.flatMap(database => notionPage_1.default(database))).then(x => x.flat());
+        const todoList = await Promise.all(pageList.flatMap(page => notionTodo_1.default(page['id']))).then(x => x.flat());
+        res.send(todoList);
     })();
 });
 app.listen(3000, () => {
