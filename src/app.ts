@@ -1,10 +1,9 @@
 require('dotenv').config();
 
 import express from 'express';
-import getDatabaseList from './notionDatabase'
-import getPages, { Page } from './notionPage';
-import getTodoChildrenFromBlockId from './notionTodo';
-
+import getDatabaseList from './notion/notionDatabase'
+import getUserPages from './pages';
+import getTodos from './todos';
 
 const app = express();
 
@@ -19,10 +18,7 @@ app.get('/', (req, res) => {
 // List all pages from all authorized databases. 
 app.get('/pages', (req, res) => {
     (async () => {
-        const databaseList = await getDatabaseList().then(x => x.flat());
-        const pageList = await Promise.all(
-            databaseList.flatMap(database => getPages(database))
-        ).then(x => x.flat());
+        const pageList = await getUserPages();
         res.send(pageList);
     })();
 })
@@ -30,13 +26,7 @@ app.get('/pages', (req, res) => {
 // List all todos
 app.get('/todos', (req, res) => {
     (async () => {
-        const databaseList = await getDatabaseList().then(x => x.flat());
-        const pageList = await Promise.all(
-            databaseList.flatMap(database => getPages(database))
-        ).then(x => x.flat());
-        const todoList = await Promise.all(
-            pageList.flatMap(page => getTodoChildrenFromBlockId(page['id']))
-        ).then(x => x.flat());
+        const todoList = await getTodos();
         res.send(todoList);
     })();
 })
@@ -47,6 +37,8 @@ app.get('/sync', (req, res) => {
         if (!databaseList.map(db => db.title.toLowerCase()).includes('todotion')) {
             res.send('No authorized todotion database found, pleaes add a database called "Todotion" and authorize this integration to use it.');
         } else {
+            const todoList = await getTodos();
+            // TODO add blocks as children to new page.
             res.send('Synced');
         }
     })();

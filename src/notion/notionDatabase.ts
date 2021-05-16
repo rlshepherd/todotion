@@ -12,6 +12,7 @@ const databaseReducer = (acc: Database[], database: {title: {plain_text: string}
 const getDatabaseList = async () => {
   const databasesResponse = await notion.databases.list();
   return databasesResponse['results'].reduce(databaseReducer, []) as Promise<Database[]>;
+
 }
 
 export { getDatabaseList as default };

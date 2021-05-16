@@ -20,7 +20,7 @@ const getPages = async (database: Database) => {
     const pagesResponse = await notion.databases.query({
         database_id: database['id'],
     });
-    return pagesResponse['results'].reduce(pageReducer, []).flat() as Promise<Page[]>;
+    return pagesResponse['results'].reduce(pageReducer, []) as Promise<Page[]>;
 }
 
 export {getPages as default};
