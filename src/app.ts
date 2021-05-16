@@ -3,6 +3,7 @@ require('dotenv').config();
 import express from 'express';
 import getDatabaseList from './notion/notionDatabase'
 import getUserPages from './pages';
+import getAllTodos from './todos';
 import getTodos from './todos';
 
 const app = express();
@@ -30,6 +31,14 @@ app.get('/todos', (req, res) => {
         res.send(todoList);
     })();
 })
+
+app.get('/allTodos', (req, res) => {
+    (async () => {
+        const todoList = await getAllTodos();
+        res.send(todoList);
+    })();
+})
+
 
 app.get('/sync', (req, res) => {
     (async () => {
