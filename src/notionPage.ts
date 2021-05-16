@@ -7,7 +7,13 @@ export interface Page {
 }
 
 const pageReducer = (acc: Page[], page: {id: string, properties: {Name: {title: {plain_text: string}[]}}}) => {
-    return [...acc, {id: page['id'], name: page['properties']['Name']['title'][0]['plain_text']}]
+    let name;
+    if (page['properties']['Name']['title'].length > 0) {
+        name = page['properties']['Name']['title'][0]['plain_text']; 
+    } else {
+        name = "Untitled";  
+    }
+    return [...acc, {id: page['id'], name: name}]
 }
 
 const getPages = async (database: Database) => {

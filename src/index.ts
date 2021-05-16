@@ -41,6 +41,17 @@ app.get('/todos', (req, res) => {
     })();
 })
 
+app.get('/sync', (req, res) => {
+    (async () => {
+        const databaseList = await getDatabaseList().then(x => x.flat());
+        if (!databaseList.map(db => db.title.toLowerCase()).includes('todotion')) {
+            res.send('No authorized todotion database found, pleaes add a database called "Todotion" and authorize this integration to use it.');
+        } else {
+            res.send('Synced');
+        }
+    })();
+})
+
 app.listen(3000, () => {
     console.log('The application is listening on port 3000!');
 })
