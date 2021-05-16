@@ -24,21 +24,15 @@ app.get('/pages', (req, res) => {
     })();
 })
 
-// List all todos
+// List all todos.
 app.get('/todos', (req, res) => {
     (async () => {
-        const todoList = await getTodos();
-        res.send(todoList);
-    })();
-})
-
-app.get('/allTodos', (req, res) => {
-    (async () => {
+        // This method recursively traverse the block tree.
+        // If it's too much recursion depth, use `getTodos()` instead. 
         const todoList = await getAllTodos();
         res.send(todoList);
     })();
 })
-
 
 app.get('/sync', (req, res) => {
     (async () => {
