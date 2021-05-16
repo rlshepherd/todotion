@@ -18,16 +18,20 @@ app.get('/', (req, res) => {
 });
 // List all pages from all authorized databases. 
 app.get('/pages', (req, res) => {
-    notionDatabase_1.default().then((databaseList) => {
-        Promise.all(databaseList.flatMap(database => notionPage_1.default(database))).then((pageList) => res.send(pageList[0]));
-    });
+    (async () => {
+        const databaseList = await notionDatabase_1.default();
+        const pageList = await Promise.all(databaseList.flatMap(database => notionPage_1.default(database)));
+        res.send(pageList.flat());
+    })();
 });
+// List all todos
 app.get('/todos', (req, res) => {
-    notionDatabase_1.default().then((databaseList) => {
-        Promise.all(databaseList.flatMap(database => notionPage_1.default(database))).then((pageList) => {
-            Promise.all(pageList[0].flatMap(page => notionTodo_1.default(page['id']))).then((value) => res.send(value));
-        });
-    });
+    (async () => {
+        const databaseList = await notionDatabase_1.default();
+        const pageList = await Promise.all(databaseList.flat().flatMap(database => notionPage_1.default(database)));
+        const todoList = await Promise.all(pageList.flat().flatMap(page => notionTodo_1.default(page['id'])));
+        res.send(todoList.flat());
+    })();
 });
 app.listen(3000, () => {
     console.log('The application is listening on port 3000!');

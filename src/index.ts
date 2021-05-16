@@ -2,8 +2,8 @@ require('dotenv').config();
 
 import express from 'express';
 import getDatabaseList from './notionDatabase'
-import getPages from './notionPage';
-import getTodos from './notionTodo';
+import getPages, { Page } from './notionPage';
+import getTodoChildrenFromBlockId from './notionTodo';
 
 
 const app = express();
@@ -18,34 +18,27 @@ app.get('/', (req, res) => {
 
 // List all pages from all authorized databases. 
 app.get('/pages', (req, res) => {
-    getDatabaseList().then(
-        (databaseList) => {
-            Promise.all(
-                databaseList.flatMap(database => getPages(database))
-            ).then(
-                (pageList) => res.send(pageList[0])
-            )
-        }
-    )
+    (async () => {
+        const databaseList = await getDatabaseList();
+        const pageList = await Promise.all(
+            databaseList.flatMap(database => getPages(database))
+        );
+        res.send(pageList.flat());
+    })();
 })
 
-
+// List all todos
 app.get('/todos', (req, res) => {
-    getDatabaseList().then(
-        (databaseList) => {
-            Promise.all(
-                databaseList.flatMap(database => getPages(database))
-            ).then(
-                (pageList) => {
-                    Promise.all(
-                        pageList[0].flatMap(page => getTodos(page['id']))
-                    ).then(
-                        (value) => res.send(value)
-                    )
-                } 
-            )
-        }
-    ) 
+    (async () => {
+        const databaseList = await getDatabaseList();
+        const pageList = await Promise.all(
+            databaseList.flat().flatMap(database => getPages(database))
+        );
+        const todoList = await Promise.all(
+            pageList.flat().flatMap(page => getTodoChildrenFromBlockId(page['id']))
+        );
+        res.send(todoList.flat());
+    })();
 })
 
 app.listen(3000, () => {

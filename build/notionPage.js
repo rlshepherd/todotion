@@ -8,13 +8,10 @@ const notionClient_1 = __importDefault(require("./notionClient"));
 const pageReducer = (acc, page) => {
     return [...acc, { id: page['id'], name: page['properties']['Name']['title'][0]['plain_text'] }];
 };
-const getPages = (database) => {
-    const pagesResponse = async (database) => {
-        return await notionClient_1.default.databases.query({
-            database_id: database['id'],
-        });
-    };
-    const pageList = pagesResponse(database).then((value) => value['results'].reduce(pageReducer, []));
-    return pageList;
+const getPages = async (database) => {
+    const pagesResponse = await notionClient_1.default.databases.query({
+        database_id: database['id'],
+    });
+    return pagesResponse['results'].reduce(pageReducer, []).flat();
 };
 exports.default = getPages;

@@ -9,17 +9,12 @@ export interface Todo extends Block {
     text: string
 }
 
-const getTodos = (blockid: string) => { 
-    const blockResponse = async (blockid: string) => {
-        return await notion.blocks.children.list({
-            block_id: blockid,
-            page_size: 50,
-        }); 
-    }
-    const todoList: Promise<Todo[]> = blockResponse(blockid).then(
-        (value) => value['results'].filter((block: {type: string}) => block['type'] === 'to_do')
-    )
-    return todoList;
+const getTodoChildrenFromBlockId = async (blockid: string) => { 
+    const blockResponse = await notion.blocks.children.list({
+        block_id: blockid,
+        page_size: 50,
+    }); 
+    return blockResponse['results'].filter((block: {type: string}) => block['type'] === 'to_do') as Promise<Todo[]>;
 }
 
-export {getTodos as default};
+export {getTodoChildrenFromBlockId as default};

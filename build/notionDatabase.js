@@ -8,9 +8,8 @@ const notionClient_1 = __importDefault(require("./notionClient"));
 const databaseReducer = (acc, database) => {
     return [...acc, { title: database['title'][0]['plain_text'], id: database['id'] }];
 };
-const getDatabaseList = () => {
-    const databasesResponse = async () => { return await notionClient_1.default.databases.list(); };
-    const databaseList = databasesResponse().then((value) => value['results'].reduce(databaseReducer, []));
-    return databaseList;
+const getDatabaseList = async () => {
+    const databasesResponse = await notionClient_1.default.databases.list();
+    return databasesResponse['results'].reduce(databaseReducer, []);
 };
 exports.default = getDatabaseList;
