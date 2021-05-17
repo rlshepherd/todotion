@@ -11,10 +11,12 @@ const getChildrenFromBlockId = async (blockid: string) => {
         block_id: blockid,
         page_size: 50,
     }); 
+    // TODO implement pagination.
     return blockResponse['results'] as Promise<Block[]>;
 }
 
 const recursiveGetChildrenFromBlockId = async (blockid: string) => {
+    // TODO add a depth limit option to this function. 
     const children = await getChildrenFromBlockId(blockid).then(x => x.flat())
     const grandChildren: Block[] = await Promise.all(
         children

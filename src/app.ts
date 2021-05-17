@@ -27,8 +27,6 @@ app.get('/pages', (req, res) => {
 // List all todos.
 app.get('/todos', (req, res) => {
     (async () => {
-        // This method recursively traverse the block tree.
-        // If it's too much recursion depth, use `getTodos()` instead. 
         const todoList = await getAllTodos();
         res.send(todoList);
     })();
