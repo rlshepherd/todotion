@@ -24,14 +24,8 @@ app.get('/pages', (req, res) => {
         res.send(pageList);
     })();
 });
-// List all todos
+// List all todos.
 app.get('/todos', (req, res) => {
-    (async () => {
-        const todoList = await todos_2.default();
-        res.send(todoList);
-    })();
-});
-app.get('/allTodos', (req, res) => {
     (async () => {
         const todoList = await todos_1.default();
         res.send(todoList);

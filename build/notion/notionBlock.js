@@ -10,14 +10,16 @@ const getChildrenFromBlockId = async (blockid) => {
         block_id: blockid,
         page_size: 50,
     });
+    // TODO implement pagination.
     return blockResponse['results'];
 };
 exports.getChildrenFromBlockId = getChildrenFromBlockId;
 const recursiveGetChildrenFromBlockId = async (blockid) => {
+    // TODO add a depth limit option to this function. 
     const children = await getChildrenFromBlockId(blockid).then(x => x.flat());
     const grandChildren = await Promise.all(children
         .filter(child => child.has_children)
-        .flatMap(hasChild => recursiveGetChildrenFromBlockId(hasChild.id)))
+        .flatMap(hasChildren => recursiveGetChildrenFromBlockId(hasChildren.id)))
         .then(x => x.flat());
     return [...children, ...grandChildren];
 };
